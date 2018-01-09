@@ -1,0 +1,1365 @@
+<HTML>
+<HEAD>
+<TITLE> EpicReady [min. çöz.:1280x1024]</TITLE>
+<HTA:APPLICATION
+		id="oEOP"
+	applicationname="eop"
+	innerborder = "no"
+	border="thick"
+	borderstyle="normal"
+	caption="yes"
+	icon="img/icons/eop.ico"
+	maximizebutton="yes"
+	minimizebutton="yes"
+	showintaskbar="yes"
+	singleinstance="yes"
+	sysmenu="yes"
+	version="2.0"
+	windowstate="maximize"
+	scroll = "yes"
+	selection = "no"
+	navigable = "yes"
+	contextmenu = "no"
+	>
+
+<LINK REL="stylesheet" HREF="css/css.css" TYPE="text/css">
+<script language="jscript" src="js/func_lib.js"></script>
+<script language="vbscript" src="vbs/baglanti.vbs"></script>
+
+<SCRIPT language="vbscript">
+
+function verilerial()
+rskapatici()
+SQL="Select DISTINCT hasta_kurum from hastalar"
+rs.Open SQL
+
+kurumbilgisi="<select name=kurum1 id=kurum1 class=323 onchange=kurumkontrol(this.value)>"
+kurumbilgisi = kurumbilgisi & "<option>Yeni Kurum</option>"
+Do while not rs.eof
+kurumbilgisi = kurumbilgisi & "<option value="
+kurumbilgisi = kurumbilgisi & Replace(rs("hasta_kurum")," ","&nbsp;")
+kurumbilgisi = kurumbilgisi & ">"
+kurumbilgisi = kurumbilgisi & rs("hasta_kurum")
+kurumbilgisi = kurumbilgisi & "</option>"
+rs.movenext
+Loop
+kurumbilgisi = kurumbilgisi & "</select><br><input class=textbox1 type=text name=kurum2 id=kurum2>"
+
+document.getElementbyId("kurumu").innerHTML=kurumbilgisi
+rs.Close
+Call cclose() : End Function
+
+
+'kurum seçildiðinde kontrol ediliyor
+Function kurumkontrol(deger)
+rskapatici()
+		if deger="" OR deger=Null then
+		document.getElementbyId("kurum2").style.visibility="visible"
+		Else
+		document.getElementbyId("kurum2").value=""
+		document.getElementbyId("kurum2").style.visibility="hidden"
+		End if
+Call cclose() : End Function
+
+
+
+'***************************************************************
+' Hali hazýrdaki kayýtlarý ekrana getiren fonksiyonu yazýyoruz.*
+'***************************************************************
+Function kayitgoster()
+rskapatici()
+sqlcumlesi=document.getElementbyId("sqlci").value
+		if sqlcumlesi=Null or sqlcumlesi="" then
+		SQL="SELECT * FROM hastalar"
+		Else
+		SQL=sqlcumlesi
+		End if
+rs.Open SQL
+total="<table width=100% cellpadding=0 cellspacing=0 border=0><tr class=tr5><td width=150 class=ic>ADI ve T.C. No</td><td class=ic>ADRES</td><td class=ic>SÝCÝL ve KARNE NO:</td><td class=ic>TELEFONLAR</td><td class=ic>(CÝNSÝYET) DOÐUM TARÝHÝ-YERÝ</td><td class=ic>ÝÞLEM</td></tr>"
+
+
+	Do while not rs.eof
+
+adi = rs("hasta_adi")
+soyadi = rs("hasta_soyadi")
+dogum= rs("hasta_dogum_gun") &"/"& rs("hasta_dogum_ay") &"/"& rs("hasta_dogum_yil")
+total = total & " <tr class=tr5 title="""&adi &" "&soyadi&""" >"
+total = total & " <td class=ic><b>" & adi &"&nbsp;" & soyadi &"</b><br>Vat. No:"&rs("hasta_tckimlik_no")&"</td>"
+total = total & " <td class=ic>"&rs("hasta_adres")&"</td>"
+total = total & " <td class=ic>Sicil:"&rs("hasta_sicil")&"<br>Karne No:"&rs("hasta_karne_no")&"</td>"
+total = total & " <td class=ic>" & REPLACE(rs("hasta_telefonlar"),",","<br>") & "</td>"
+total = total & " <td class=ic>(" &rs("hasta_cinsiyet")&")&nbsp;"& dogum &"-"& rs("hasta_dogum_yer")&"</td>"
+total = total & "<td class=ic><img src=images/hastakart.png onclick=hastaguncelle("&rs("id")&") title=GÖZAT class=linkimg><img src=img/icons/87.bmp onclick=hastasil("&rs("id")&") title=SÝL  class=linkimg></td></tr>"
+	sira=sira+1
+	rs.movenext
+	Loop
+total = total & "</table>"
+
+document.getElementbyId("bulunanlar").innerHTML=total
+		' açýlan rs kapatýlýyor
+		rs.close
+Call cclose() : End Function
+'***************************************************************
+function kontrolet(neresini,neyi)
+aranan_kisi=neresini
+top_uz= LEN(aranan_kisi)
+
+	if top_uz >1 then
+	document.getElementbyId("sqlci").value="SELECT * FROM hastalar WHERE "& neyi &" LIKE '%"& aranan_kisi &"%' ORDER BY hasta_adi"
+	call kayitgoster()
+	End if
+
+' basliklar degistiriliyor
+document.getElementById("hastabaslik").innerText = "Hasta Bilgileri"
+Call cclose() : End Function
+'***********************************************************************
+'***************** forma girilen verileri kaydetme fonksiyonu çaðýrýlýyor
+Function kaydet()
+rskapatici()
+'degiskenler alýnýyor
+adi=document.f.adi.value
+soyadi=document.f.soyadi.value
+gun=document.f.gun.value
+ay=document.f.ay.value
+yil=document.f.yil.value
+sehir=document.f.sehir.options(document.f.sehir.selectedIndex).value
+	if document.f.cinsiyet(0).checked then
+	cinsiyet=document.f.cinsiyet(0).value
+	Elseif document.f.cinsiyet(1).checked then
+	cinsiyet=document.f.cinsiyet(1).value
+	End if
+telefonlar=document.f.telefonlar.value
+tckimlikno=document.f.tckimlikno.value
+	kurum=document.f.kurum1.options(document.f.kurum1.selectedIndex).value
+	if kurum="" OR kurum=Null then
+	kurum=document.f.kurum2.value
+	End if
+hastaliklar=document.f.hastaliklar.value
+sicil=document.f.sicil.value
+karneno=document.f.karneno.value
+adres=document.f.adres.value
+ilaclar=document.f.ilaclar.value
+tanilari=document.f.tanilarz.value
+Set markerlar=document.getElementById("hepatitK")
+markerS=markerlar.options.length
+' verilerin doðruluklarý ve uygunluklarý kontrol ediliyor
+msg="Aþaðýdaki hata(lar) oluþtu:"
+if adi="" then
+msg=msg & Chr(13) & "Hasta adý girilmemiþ."
+End if
+if soyadi="" then
+msg=msg & Chr(13) & "Hasta soyadý girilmemiþ."
+End if
+
+if tckimlikno="" then
+msg=msg & Chr(13) & "T.C. Kimlik No girilmemiþ."
+End if
+
+if adres="" then
+msg=msg & Chr(13) & "Adres girilmemiþ."
+End if
+
+if markerS<1 then
+msg=msg & Chr(13) & "Hepatit Marker bilgisi girilmemiþ!."
+End if
+
+if msg<>"Aþaðýdaki hata(lar) oluþtu:" then
+msgbox(msg)
+exit function
+End if
+
+' vt ye veriler aktarýlýyor 
+rskapatici()
+SQL="SELECT * FROM hastalar"
+rs.Open SQL
+rs.addnew
+rs("hasta_tckimlik_no")=tckimlikno
+rs("hasta_adi")=adi
+rs("hasta_soyadi")=soyadi
+rs("hasta_dogum_yil")=yil
+rs("hasta_dogum_ay")=ay
+rs("hasta_dogum_gun")=gun
+rs("hasta_dogum_yer")=sehir
+rs("hasta_cinsiyet")=cinsiyet
+rs("hasta_kurum")=kurum
+rs("hasta_sicil")=sicil
+rs("hasta_karne_no")=karneno
+rs("hasta_adres")=adres
+rs("hasta_hastalik_liste")=hastaliklar
+rs("hasta_telefonlar")=telefonlar
+rs("hastanin_kullandigi_ilaclar")=ilaclar
+rs("hasta_tani")=tanilari
+	Set markerlar = document.f.hepatitK
+	markerS = markerlar.options.length
+	if markerS>0 then
+	for mL =0 to markerS-1
+	markerList = markerList &","& document.f.hepatitK.options(mL).value
+	next
+	End if
+
+rs("hasta_hepatit_marker")=markerList
+rs.update
+msgbox("Bu hastanýn kaydý alýnmýþtýr...")
+document.f.reset()
+window.location.reload()
+rs.close
+
+Call cclose() : End Function
+
+
+function bak(neye,kaca)
+	Select case neye
+		case "gun"
+			if len(window.f.gun.value)=kaca then
+			window.f.ay.focus()
+			End if
+		case "ay"
+			if len(window.f.ay.value)=kaca then
+			window.f.yil.focus()
+			End if
+		case "yil"
+			if len(window.f.yil.value)=kaca then
+			window.f.sehir.focus()
+			End if
+	end select
+Call cclose() : End Function
+
+
+Function hastakarti(id)
+ End Function
+
+
+
+
+
+
+Function hastaguncelle(idsi)
+document.getElementById("duzeltdugmesi").disabled="FALSE"
+rskapatici()
+SQL="SELECT * FROM hastalar WHERE id="&idsi
+rs.Open SQL
+' veritabaný baðlantýsý açýldý þimdi güncelleme iþlemi için veriler tekrardan forma yazýlýyor
+document.f.adi.value = rs("hasta_adi")
+document.f.soyadi.value = rs("hasta_soyadi")
+document.f.gun.value = rs("hasta_dogum_gun")
+document.f.ay.value = rs("hasta_dogum_ay")
+document.f.yil.value = rs("hasta_dogum_yil")
+document.f.telefonlar.value = rs("hasta_telefonlar")
+document.f.tckimlikno.value = rs("hasta_tckimlik_no")
+document.f.hastaliklar.value = rs("hasta_hastalik_liste")
+document.f.sicil.value = rs("hasta_sicil")
+document.f.karneno.value = rs("hasta_karne_no")
+document.f.adres.value = rs("hasta_adres")
+document.f.ilaclar.value = rs("hastanin_kullandigi_ilaclar")
+document.getElementById("hastabaslik").innerText = "Hasta: " & rs("hasta_adi") &" "& rs("hasta_soyadi")&" -"& rs("hasta_dogum_yil")
+	if rs("hasta_cinsiyet")="e" then
+	document.f.cinsiyet(0).checked=TRUE
+	Else
+	document.f.cinsiyet(1).checked=TRUE
+	End if
+
+
+			'document.f.kurum1.disabled="true"
+			document.f.kurum2.value=rs("hasta_kurum")
+
+				For xcv=1 to (document.f.sehir.options.length-1)
+					if document.f.sehir.options(xcv).value=rs("hasta_dogum_yer") then
+					document.f.sehir.options(xcv).selected=TRUE
+						exit for
+					End if
+				Next
+' hepatit markerlarý gösteriyoruz
+Set hepMarker = document.getElementById("hepatitK")
+hepMarker.options.length=0
+markerlar=rs("hasta_hepatit_marker")
+	if len(markerlar)>2 then
+	marker=Split(markerlar,",")
+		for h_m=1 to UBound(marker)
+			Set oOption = document.createElement("OPTION")
+				oOption.text=marker(h_m)
+				oOption.value=marker(h_m)
+				hepMarker.add(oOption)
+		next
+	End if
+' tanýlar aktarýlýyor
+document.getElementById("tanilarz").value=rs("hasta_tani")
+
+document.getElementById("kayitdugmesi").disabled=true
+document.getElementById("idmiz").value=idsi
+
+' epikrizleri getiriyoruz
+rskapatici()
+SQL="SELECT * FROM epikrizler WHERE hasta_id='"&idsi&"'"
+rs.Open SQL
+ON ERROR RESUME NEXT
+	if not rs.eof then
+Set eskiEpi = document.getElementById("eskiepikrizler")
+eskiEpi.options.length=0
+Set oOption = document.createElement("OPTION")
+oOption.text=" Epikriz tarihi seçin "
+oOption.value=""
+eskiEpi.add(oOption)
+		Do while not rs.eof
+				Set oOption = document.createElement("OPTION")
+					oOption.text=rs("tarih2") &"-"&rs("tarih3")
+					oOption.value=rs("id")
+					eskiEpi.add(oOption)
+		rs.movenext
+		Loop
+	End if
+Call cclose() : End Function
+
+' Düzeltmeyi kaydetmek için burdaki fonksiyondan yararlanýlacak
+
+Function duzeltmeyikaydet()
+idsimiz=document.getElementById("idmiz").value
+
+
+'degiskenler alýnýyor
+adi=document.f.adi.value
+soyadi=document.f.soyadi.value
+gun=document.f.gun.value
+ay=document.f.ay.value
+yil=document.f.yil.value
+sehir=document.f.sehir.options(document.f.sehir.selectedIndex).value
+	if document.f.cinsiyet(0).checked then
+	cinsiyet=document.f.cinsiyet(0).value
+	Elseif document.f.cinsiyet(1).checked then
+	cinsiyet=document.f.cinsiyet(1).value
+	End if
+telefonlar=document.f.telefonlar.value
+tckimlikno=document.f.tckimlikno.value
+	kurum=document.f.kurum1.options(document.f.kurum1.selectedIndex).value
+	if kurum="" OR kurum=Null then
+	kurum=document.f.kurum2.value
+	End if
+hastaliklar=document.f.hastaliklar.value
+sicil=document.f.sicil.value
+karneno=document.f.karneno.value
+adres=document.f.adres.value
+ilaclar=document.f.ilaclar.value
+' verilerin doðruluklarý ve uygunluklarý kontrol ediliyor
+msg="Aþaðýdaki hata(lar) oluþtu:"
+if adi="" then
+msg=msg & Chr(13) & "Hasta adý girilmemiþ."
+End if
+if soyadi="" then
+msg=msg & Chr(13) & "Hasta soyadý girilmemiþ."
+End if
+
+if tckimlikno="" then
+msg=msg & Chr(13) & "T.C. Kimlik No girilmemiþ."
+End if
+
+if adres="" then
+msg=msg & Chr(13) & "Adres girilmemiþ."
+End if
+
+if msg<>"Aþaðýdaki hata(lar) oluþtu:" then
+msgbox(msg)
+exit function
+End if
+
+' yenilenen marker listesi alýnýyor
+	Set markerlar = document.f.hepatitK
+	markerS = markerlar.options.length
+	if markerS>0 then
+	for mL =0 to markerS-1
+	markerList = markerList &","& document.f.hepatitK.options(mL).value
+	next
+	End if
+
+
+
+
+
+' vt ye veriler aktarýlýyor 
+rskapatici()
+SQL="SELECT * FROM hastalar WHERE id="&idsimiz
+rs.Open SQL
+rs("hasta_tckimlik_no")=tckimlikno
+rs("hasta_adi")=adi
+rs("hasta_soyadi")=soyadi
+rs("hasta_dogum_yil")=yil
+rs("hasta_dogum_ay")=ay
+rs("hasta_dogum_gun")=gun
+rs("hasta_dogum_yer")=sehir
+rs("hasta_cinsiyet")=cinsiyet
+rs("hasta_kurum")=kurum
+rs("hasta_sicil")=sicil
+rs("hasta_karne_no")=karneno
+rs("hasta_adres")=adres
+rs("hasta_hastalik_liste")=hastaliklar
+rs("hasta_telefonlar")=telefonlar
+rs("hastanin_kullandigi_ilaclar")=ilaclar
+rs("hasta_hepatit_marker")=markerList
+rs.update
+msgbox("Bu hastanýn kaydý düzeltilmiþtir...")
+document.f.reset()
+window.location.reload()
+rs.close
+
+Call cclose() : End Function
+
+Function hastasil(id)
+rskapatici()
+' HASTANIN KAYDINI GERÇEKTEN SÝLMEK ÝSTÝYORMUYUZ?
+SQL="SELECT * FROM hastalar WHERE id="&id
+rs.Open SQL
+Set WshShell = CreateObject("WScript.Shell")
+uyari1="AÞAÐIDAKÝ HASTANIN KAYDINI GERÇEKTEN SÝLMEK ÝSTÝYOR MUSUNUZ?" & Chr(13)
+uyari2="TC No:" & rs("hasta_tckimlik_no")&Chr(13)&_
+"Hasta:" & rs("hasta_adi") &" "& rs("hasta_soyadi") & " [Doðum:" & rs("hasta_dogum_yil") & "]"
+cevap = WshShell.Popup(uyari1 & uyari2, 4, "HASTA KAYDI SÝLME ONAYI", 4+32)
+
+if cevap=6 then
+' VERÝLEN CEVAP EVET ÝSE KAYIT SÝLÝNECEKTÝR
+rskapatici()
+SQL="DELETE * FROM hastalar WHERE id="&id
+rs.Open SQL
+msgbox("AÞAÐIDAKÝ HASTANIN TÜM KAYDI SÝLÝNMÝÞTÝR!" & Chr(13) & uyari2)
+window.location.reload()
+Else
+MsgBox("Silme iþleminden vazgeçtiniz!")
+Exit function
+End if
+Call cclose() : End Function
+
+
+
+</script>
+
+<body style="margin:0;" bgcolor="buttonface" background="img/fon1.gif" onload="verilerial();">
+
+
+<div class="kirmizibar" id="hastabaslik" name="hastabaslik">Hasta Bilgileri</div>
+<table border="0" width="100%" id="table0" cellspacing="0" cellpadding="0" class="menu" style="margin:0">
+
+</table>
+<form name="f" id="f" style="margin:0">
+<table border="0" width="100%" id="table1">
+	<tr>
+		<td width="250" valign="top">
+<!-- Buraya form ksýmý gelecek-->
+<table border="0" width="250" id="table1" cellspacing="0" cellpadding="0" class="menu">
+
+	<tr>
+		<td class="ic"  colspan="2" align="left">
+<b>Hasta Bilgi:</b>HASTA ID:<input class="textbox1" size="4" type="text" name="idmiz" id="idmiz" readonly>&nbsp;<a onclick="formutemizle();" style="cursor:pointer;" title="Hasta bilgisi formunu sýfýrla">Formu Temizle</a>
+		</td>
+	 </tr>
+	<tr>
+
+		<td class="ic" align="right" valign="top">
+<b>Adý:</b><input type="text" name="adi" id="adi" size="27" class="textbox1" onkeyup="kontrolet(this.value,'hasta_adi');">
+ <b>Soyadý:</b><input type="text" name="soyadi" size="27" class="textbox1" onkeyup="kontrolet(this.value,'hasta_soyadi');">
+<input type="hidden" name="sqlci" id="sqlci" value="">
+</td>
+		<td class="ic"align="left">
+<input type="text" name="gun" size="2" class="textbox1" onfocus="this.select()" onkeyup="bak('gun',2);">
+<input type="text" name="ay" size="2" class="textbox1" onfocus="this.select()" onkeyup="bak('ay',2);">
+<input type="text" name="yil" size="4" class="textbox1" onfocus="this.select()" onkeyup="bak('yil',4);">
+Doðum Tarihi(g/a/y)
+	  	<SELECT size=1
+name=sehir  class="323"> <OPTION selected></OPTION> <OPTION 
+value=Adana>Adana</OPTION> <OPTION 
+value=Adýyaman>Adýyaman</OPTION> <OPTION 
+value=Afyon>Afyon</OPTION> <OPTION 
+value=Aðrý>Aðrý</OPTION> <OPTION 
+value=Aksaray>Aksaray</OPTION> <OPTION 
+value=Amasya>Amasya</OPTION> <OPTION 
+value=Antalya>Antalya</OPTION> <OPTION 
+value=Ankara>Ankara</OPTION> <OPTION 
+value=Ardahan>Ardahan</OPTION> <OPTION 
+value=Artvin>Artvin</OPTION> <OPTION 
+value=Aydýn>Aydýn</OPTION> <OPTION 
+value=Balýkesir>Balýkesir</OPTION> <OPTION 
+value=Bartýn>Bartýn</OPTION> <OPTION 
+value=Batman>Batman</OPTION> <OPTION 
+value=Bayburt>Bayburt</OPTION> <OPTION 
+value=Bilecik>Bilecik</OPTION> <OPTION 
+value=Bingöl>Bingöl</OPTION> <OPTION 
+value=Bitlis>Bitlis</OPTION> <OPTION 
+value=Bolu>Bolu</OPTION> <OPTION 
+value=Burdur>Burdur</OPTION> <OPTION 
+value=Bursa>Bursa</OPTION> <OPTION 
+value=Çanakkale>Çanakkale</OPTION> <OPTION 
+value=Çankýrý>Çankýrý</OPTION> <OPTION 
+value=Çorum>Çorum</OPTION> <OPTION 
+value=Denizli>Denizli</OPTION> <OPTION 
+value=Diyarbakýr>Diyarbakýr</OPTION> <OPTION 
+value=Düzce>Düzce</OPTION> <OPTION 
+value=Edirne>Edirne</OPTION> <OPTION 
+value=Elazýð>Elazýð</OPTION> <OPTION 
+value=Erzican>Erzican</OPTION> <OPTION 
+value=Erzurum>Erzurum</OPTION> <OPTION 
+value=Eskiþehir>Eskiþehir</OPTION> <OPTION 
+value=Gaziantep>Gaziantep</OPTION> <OPTION 
+value=Giresun>Giresun</OPTION> <OPTION 
+value=Gümüþhane>Gümüþhane</OPTION> <OPTION 
+value=Hakkari>Hakkari</OPTION> <OPTION 
+value=Hatay>Hatay</OPTION> <OPTION 
+value=Iðdýr>Iðdýr</OPTION> <OPTION 
+value=Isparta>Isparta</OPTION> <OPTION 
+value=Ýçel>Ýçel</OPTION> <OPTION 
+value=Ýstanbul>Ýstanbul</OPTION> <OPTION 
+value=Ýzmir>Ýzmir</OPTION> <OPTION 
+value=Kars>Kars</OPTION> <OPTION 
+value=Kastamonu>Kastamonu</OPTION> <OPTION 
+value=Kayseri>Kayseri</OPTION> <OPTION 
+value=Kýrýkkale>Kýrýkkale</OPTION> <OPTION 
+value=Kýrklareli>Kýrklareli</OPTION> <OPTION 
+value=Kýrþehir>Kýrþehir</OPTION> <OPTION 
+value=Kocaeli>Kocaeli</OPTION> <OPTION 
+value=Konya>Konya</OPTION> <OPTION 
+value=Kütahya>Kütahya</OPTION> <OPTION 
+value=Malatya>Malatya</OPTION> <OPTION 
+value=Manisa>Manisa</OPTION> <OPTION 
+value=Kahramanmaraþ>Kahramanmaraþ</OPTION><OPTION
+value=Karabük>Karabük</OPTION> <OPTION 
+value=Karaman>Karaman</OPTION> <OPTION 
+value=Kilis>Kilis</OPTION> <OPTION 
+value=Mardin>Mardin</OPTION> <OPTION 
+value=Muðla>Muðla</OPTION> <OPTION 
+value=Muþ>Muþ</OPTION> <OPTION 
+value=Nevþehir>Nevþehir</OPTION> <OPTION 
+value=Niðde>Niðde</OPTION> <OPTION 
+value=Ordu>Ordu</OPTION> <OPTION 
+value=Osmaniye>Osmaniye</OPTION> <OPTION 
+value=Rize>Rize</OPTION> <OPTION 
+value=Sakarya>Sakarya</OPTION> <OPTION 
+value=Samsun>Samsun</OPTION> <OPTION 
+value=Siirt>Siirt</OPTION> <OPTION 
+value=Sinop>Sinop</OPTION> <OPTION 
+value=Sivas>Sivas</OPTION> <OPTION 
+value=Tekirdað>Tekirdað</OPTION> <OPTION 
+value=Tokat>Tokat</OPTION> <OPTION 
+value=Trabzon>Trabzon</OPTION> <OPTION 
+value=Tunceli>Tunceli</OPTION> <OPTION 
+value=Þanlýurfa>Þanlýurfa</OPTION> <OPTION 
+value=Þýrnak>Þýrnak</OPTION> <OPTION 
+value=Uþak>Uþak</OPTION> <OPTION 
+value=Van>Van</OPTION> <OPTION 
+value=Yalova>Yalova</OPTION> <OPTION 
+value=Yozgat>Yozgat</OPTION> <OPTION 
+value=Zonguldak>Zonguldak</OPTION></SELECT>Doðum ili</td>
+	</tr>
+<tr>
+
+<td class="ic" align="left" valign="top" class="textbox1" >Erkek<input type="radio" value="e" checked  name="cinsiyet"> &nbsp;&nbsp;
+Bayan<input type="radio" value="b" name="cinsiyet">
+</td>
+
+<td class="ic" height="26" align="left" valign="top" class="textbox1">
+<input id="telefonlar" type="text" class="textbox1" size="27">(Telefonlar)<br>
+<input id="tckimlikno" type="text" class="textbox1" size="27">(T.C. No)
+</td>
+</tr>
+
+
+	<tr>
+
+		<td class="ic" align="left" valign="top" class="textbox1" name="kurumu" id="kurumu">
+
+
+
+
+
+		</td>
+
+		<td class="ic" align="left" valign="top" rowspan="2">Hastalýklarý:<br>
+		<textarea rows="3" id="hastaliklar" cols="35" class="222"></textarea><br>
+		Virgüllerle ayýrarak giriniz.</td>
+	</tr>
+	<tr>
+
+		<td class="ic"  align="left" valign="top" class="textbox1" height="27">
+		
+	  <input id="sicil" name="sicil" type="text" class="textbox1" size="23">(sicil)<br>
+	  <input id="karneno" name="karneno" type="text" class="textbox1" size="23">(karneno)
+	  </td>
+	</tr>
+	<tr>
+
+		<td class="ic"  align="left" valign="top">Adres:<br>
+		<textarea id="adres" cols="30" rows="3"  class="222"></textarea></td>
+
+		<td class="ic"  align="left" valign="top">Ýlaçlarý:<br>
+<textarea rows="3" id="ilaclar" cols="35" class="222"></textarea><br>
+		Virgüllerle ayýrarak giriniz.
+		</td>
+	</tr>
+
+
+
+	<tr>
+
+		<td class="ic"  align="left" valign="top">Hepatit marker:<br>
+		
+<select name="hepatitS" id="hepatitS" size="5" ondblclick="hepatitKver()">
+	<option value="Negatif">Negatif</option>
+	<option value="Hbs Ag">Hbs Ag</option>
+	<option value="Anti Hbs">Anti Hbs</option>
+	<option value="Anti HCV">Anti HCV</option>
+	<option value="Diðer">Diðer</option>
+</select> &gt;&gt;
+<select name="hepatitK" id="hepatitK" size="5" ondblclick="hepatitKcikart();">
+<option value="Negatif">Negatif</option>
+</select>
+<script type="text/javascript">
+function hepatitKver(){
+var hS = document.getElementById('hepatitS');
+var deger = hS.options(hS.selectedIndex).value;
+var hK = document.getElementById('hepatitK');
+if(deger=='Negatif'){hK.options.length=0;}
+			for(mSi=0;mSi<hK.options.length;mSi++){
+			//if(hK.options(0).value=='Negatif'){hK.options.remove(0);}
+					if(deger==hK.options(mSi).value){alert('Bu marker tipi seçilmiþ!');return false;}
+								}
+var oOption = document.createElement("OPTION");
+oOption.text=deger;
+oOption.value=deger;
+hK.add(oOption);
+}
+
+function hepatitKcikart(){
+	var hK = document.getElementById('hepatitK');
+	hK.options.remove(hK.selectedIndex);						
+				}
+</script>
+</td>
+
+		<td class="ic"  align="left" valign="top">Taný(saltokunur):<br>
+<textarea rows="3" id="tanilarz" name="tanilarz" cols="35" class="222" readonly="readonly"></textarea><br>
+		</td>
+	</tr>
+
+
+
+
+
+	<tr>
+		<td class="ic"  width="98%" align="left" valign="top" colspan="2">
+<button title="Hastayý Kaydet" onclick="kaydet();" name="kayitdugmesi" id="kayitdugmesi" style="cursor:hand">
+<font class="mini">KAYDET</font>
+</button>
+<button title="Hasta Bilgilerini Düzelt" onclick="duzeltmeyikaydet();" name="duzeltdugmesi" id="duzeltdugmesi" style="cursor:hand" disabled>
+<font class="mini">DÜZELT</font>
+</button>
+<script type="text/vbscript" language="vbscript">
+
+</script>
+<select name="eskiepikrizler" id="eskiepikrizler" style="margin-left:10px;" onchange="epiformdoldur()">
+<option> EPÝKRÝZLER </option>
+</select>
+<button title="EPÝKRÝZ YAZDIR" onclick="epikriz_rap_haz();" name="epikyazdirdugmesi" id="epikyazdirdugmesi" style="cursor:hand"><font class="mini">YAZDIR</font>
+</button>
+		</td>
+	</tr>
+</table>
+<!-- Form kýsmý alt sýnýrý-->
+</td>
+		<td align="left" valign="top">
+<!-- buraya sonuç bölümü gelecek -->
+<div id="bulunanlar" STYLE="width:100%;height:400;overflow:auto;background-color:white; border-left-style: inset; border-right-style: inset; border-bottom-style: inset"></div>
+</td>
+	</tr>
+</table>
+<!-- ------------------------------------------------------------------------------------------------------ -->
+<div style="border:0px;width:100%;">
+<!-- ------------------------------------------------------------------------------------------------------ -->
+
+<div align="left" class="kirmizibar" id="epikrizbaslik" name="epikrizbaslik">Epikriz</div>
+<div align="left" class="style3">
+
+  <table width="100%"  border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="ic"  width="30%"><div align="right">Taný Seçiniz 
+          <select name="tanilar" class="textbox1">
+            <option value="">Yeni Taný Ekleyiniz...</option>
+            <option value="Kronik Böbrek Yetmezliði">Kronik Böbrek Yetmezliði</option>
+            <option value="Kalp Yetmezliði">Kalp Yetmezliði</option>
+            <option value="Tip-II Diabet">Tip-II Diabet</option>
+            <option value="Multipl Sklerozis">Multipl Sklerozis</option>
+            <option value="Hiper Tansiyon">Hiper Tansiyon</option>
+            <option value="Kronik Obstrüktif Akciðer Hastalýðý">Kronik Obstrüktif Akciðer Hastalýðý</option>
+          </select>
+      </div></td>
+      <td class="ic"  width="5%">
+      <input type="button" value="&gt;&gt;" class="textbox1" style="margin:0px;" onclick="taniekle()" title="Taný Ekle">
+      <input type="button" value="&lt;&lt;" class="textbox1" style="margin:0px;" onclick="tanicikar()" title="Taný Çýkar"><br>
+
+<script type="text/vbscript" language="vbscript">
+function taniekle()
+	Set tanilist=document.getElementById("tanilar")
+	Set tanili = document.getElementById("secilenTanilar")
+	if tanilist.selectedIndex<>0 then
+			if tanili.options.length>0 then
+				for sT=0 to tanili.options.length-1
+					if tanili.options(sT).value = tanilist.options(tanilist.selectedIndex).value then
+						msgbox("Bu taný zaten eklenmiþ durumda, DÝKKAT!")
+						tanilist.options(0).selected=true
+						exit function
+					End if
+				Next
+			End if
+		Set oOption = document.createElement("OPTION")
+		oOption.text=tanilist.options(tanilist.selectedIndex).value
+		oOption.value=tanilist.options(tanilist.selectedIndex).value
+		document.all.secilenTanilar.add(oOption)
+		tanilist.options(0).selected=true
+	Else
+		exit function
+	End if
+End function
+
+function tanicikar()
+	Set tanili = document.getElementById("secilenTanilar")
+	if tanili.selectedIndex>0 then
+		tanili.options.remove(tanili.selectedIndex)
+		tanili.options(0).selected=true
+	Else
+		msgbox("Eklenmiþ bir taný yok!"):exit function
+	End if
+End function
+
+
+function formutemizle()
+document.getElementById("f").reset()
+document.getElementById("duzeltdugmesi").disabled="TRUE"
+document.getElementById("kayitdugmesi").disabled="FALSE"
+document.getElementById("hepatitK").options.length=0
+' hepatit markerlarý silelim
+Set oOption = document.createElement("OPTION")
+oOption.text="Negatif"
+oOption.value="Negatif"
+document.getElementById("hepatitK").add(oOption)
+'epikrizleride silelim
+Set eskiEpi = document.getElementById("eskiepikrizler")
+eskiEpi.options.length=0
+Set oOption = document.createElement("OPTION")
+oOption.text="EPÝKRÝZLER"
+oOption.value=""
+eskiEpi.add(oOption)
+End function
+</script>
+      </td>
+      <td class="ic"  width="64%">Seçilen Tanýlar <select name="secilenTanilar" id="secilenTanilar" class="textbox1">
+      <option>--+ Seçilen Tanýlar
+      </select> &nbsp; <input type="text" size="12" class="textbox1" id="tarih2" name="tarih2" readonly="readonly">
+      <img src="img/icons/8.bmp" onclick="atesleme('tarih2')" style="cursor:hand" title="Takvimden seçmek için týklayýnýz...">
+-<input type="text" size="12" class="textbox1" id="tarih3" name="tarih3" readonly="readonly">
+<img src="img/icons/8.bmp" onclick="atesleme('tarih3')" style="cursor:hand" title="Takvimden seçmek için týklayýnýz...">
+<div name="takvimtasiyici3" id="takvimtasiyici3" style="visibility:hidden; position:absolute;">
+<OBJECT CLASSID="clsid:8E27C92B-1264-101C-8A2F-040224009C02"
+id="takvim3" name="takvim3">
+</OBJECT>
+</div>
+<button title="EPÝKRÝZ KAYDET" onclick="epikkaydet()" name="epikkayitdugmesi" id="epikkayitdugmesi" style="cursor:hand; margin-left:100px;"><font class="mini">KAYDET</font>
+</button>
+<button title="EPÝKRÝZ SÝL" onclick="epiksil()" name="epiksilmedugmesi" id="epiksilmedugmesi" style="cursor:hand; margin-left:5px;"><font class="mini">SÝL</font>
+</button>
+        </td>
+    </tr>
+
+  </table>
+  <table width="100%"  border="1" cellspacing="0" cellpadding="0" style="border:1px solid black;">
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">Kuru Aðýrlýk </td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="kuruagirlik" type="text" class="textbox1" id="kuruagirlik" size="5" />
+        kg </div></td>
+      <td class="ic"  width="2" height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  width="137" height="23" nowrap="nowrap"><div align="left">Haftalýk Seans Sayýsý </div></td>
+      <td class="ic"  width="141" height="23" nowrap="NOWRAP">
+        <div align="left">
+          <input name="haftalikseans" type="text" class="textbox1" id="haftalikseans" size="10" />
+        /hafta</div></td>
+      <td class="ic"  width="421" rowspan="9" align="left" valign="top" nowrap="NOWRAP">	  <table width="100%"  border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <th width="29%" height="23" scope="col">&nbsp;</th>
+      <th width="35%" scope="col">ÝLAÇ ADI </th>
+      <th width="36%" scope="col">DOZ</th>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >EPO</td>
+      <td class="ic" >        <div align="left">
+        <input name="ivepo" type="text" class="textbox1" id="ivepo" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ivepo_D" type="text" class="textbox1" id="ivepo_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >IV Vitamin D<sub>3</sub> </td>
+      <td class="ic" >        <div align="left">
+        <input name="ivvitamind3" type="text" class="textbox1" id="ivvitamind3" size="23" />  
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ivvitamind3_D" type="text" class="textbox1" id="ivvitamind3_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >IV-DEMÝR</td>
+      <td class="ic" >        <div align="left">
+        <input name="ivdemir" type="text" class="textbox1" id="ivdemir" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ivdemir_D" type="text" class="textbox1" id="ivdemir_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >IV-VÝTAMÝN C </td>
+      <td class="ic" >        <div align="left">
+        <input name="ivvitaminc" type="text" class="textbox1" id="ivvitaminc" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ivvitaminc_D" type="text" class="textbox1" id="ivvitaminc_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >L-CARNITENE</td>
+      <td class="ic" >        <div align="left">
+        <input name="lcarnitene" type="text" class="textbox1" id="lcarnitene" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="lcarnitene_D" type="text" class="textbox1" id="lcarnitene_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >Ca-ASETAT</td>
+      <td class="ic" >        <div align="left">
+        <input name="caasetat" type="text" class="textbox1" id="caasetat" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="caasetat_D" type="text" class="textbox1" id="caasetat_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >Ca-KARBONAT</td>
+      <td class="ic" >        <div align="left">
+        <input name="cacarbonat" type="text" class="textbox1" id="cacarbonat" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="cacarbonat_D" type="text" class="textbox1" id="cacarbonat_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >&nbsp;</td>
+      <td class="ic" >        <div align="left">
+        <input name="ilac1" type="text" class="textbox1" id="ilac1" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ilac1_D" type="text" class="textbox1" id="ilac1_D" size="23" />
+          </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  height="23" >&nbsp;</td>
+      <td class="ic" >        <div align="left">
+        <input name="ilac2" type="text" class="textbox1" id="ilac2" size="23" />      
+      </div></td>
+      <td class="ic" >
+        <div align="left">
+          <input name="ilac2_D" type="text" class="textbox1" id="ilac2_D" size="23" />
+          </div></td>
+    </tr>
+  </table>
+	  </td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">Hedef Kuru Aðýrlýk </td>
+      <td class="ic"  width="59" height="23" nowrap="NOWRAP">
+        <div align="left">
+          <input name="hkuruagirlik_1" type="text" class="textbox1" id="hkuruagirlik_1" size="4" />
+        kg</div></td>
+      <td class="ic"  width="49" height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="hkuruagirlik_2" type="text" class="textbox1" id="hkuruagirlik_2" size="4" />
+        kg</div></td>
+      <td class="ic"  width="48" height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="hkuruagirlik_3" type="text" class="textbox1" id="hkuruagirlik_3" size="4" />
+        kg</div></td>
+      <td class="ic"  height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  height="23" nowrap="nowrap"><div align="left">Diyaliz Süresi </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="dsuresi" type="text" class="textbox1" id="dsuresi" size="10" />
+        saat</div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">Kan Akým Hýzý </td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="kanakimhizi" type="text" class="textbox1" id="kanakimhizi" size="5" />
+        ml/dakika</div></td>
+      <td class="ic"  height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  height="23" nowrap="nowrap"><div align="left">Diyalizat Akým Hýzý </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="dakimhizi" type="text" class="textbox1" id="dakimhizi" size="10" />
+        ml/dakika</div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">UF Profili </td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="ufprofili" type="text" class="textbox1" id="ufprofili" size="5" />
+        </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  height="23" nowrap="nowrap"><div align="left">Konsantrat (asidik ) </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="kasidik" type="text" class="textbox1" id="kasidik" size="23" />
+        </div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">Na Profili </td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="naprofili" type="text" class="textbox1" id="naprofili" size="5" />
+        </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  height="23" nowrap="nowrap"><div align="left">Konsantrat (bazik) </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="kbazik" type="text" class="textbox1" id="kbazik" size="23" />
+        </div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  width="85" height="23" rowspan="2" nowrap="nowrap">Heparinizasyon</td>
+      <td class="ic"  width="35" height="23" nowrap="nowrap">bolus</td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="hepbolus" type="text" class="textbox1" id="hepbolus" size="10" />
+        </div></td>
+      <td class="ic"  height="23" nowrap="nowrap">&nbsp;</td>
+      <td class="ic"  height="23" nowrap="nowrap"><div align="left">Diyalizer</div></td>
+      <td class="ic"  height="23" nowrap="nowrap">
+        <div align="left">
+          <input name="diyalizer" type="text" class="textbox1" id="diyalizer" size="23" />
+        </div></td>
+    </tr>
+    <tr>
+      <td class="ic"  width="35" height="23" nowrap="nowrap">idame</td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <input name="hepidame" type="text" class="textbox1" id="hepidame" size="10" />
+        </div></td>
+      <td class="ic"  height="23" colspan="3" rowspan="3" align="left" valign="top" nowrap="nowrap"><div align="left">Ek Not:<br /> 
+          <textarea name="eknot" cols="32" rows="4" wrap="VIRTUAL" class="textarea1" id="eknot" style="border:1px solid red; margin:0px; padding:0px;"></textarea>
+      </div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="23" colspan="2" nowrap="nowrap">Fistül Ýðnesi </td>
+      <td class="ic"  height="23" colspan="3" nowrap="nowrap">
+        <div align="left">
+          <select name="fistulignesi" id="fistulignesi">
+          <option value="Kullanýlmýyor">Kullanýlmýyor</option>
+            <option value="14 G">14 G</option>
+            <option value="15 G">15 G</option>
+            <option value="16 G">16 G</option>
+            <option value="17 G">17 G</option>
+          </select>
+        </div></td>
+    </tr>
+    <tr class="cizgi">
+      <td class="ic"  height="56" colspan="2" nowrap="nowrap">Allerjiler</td>
+      <td class="ic"  height="56" colspan="3" align="left" valign="top" nowrap="nowrap"><div align="left">
+        <textarea name="alerjiler" cols="50" rows="2" wrap="VIRTUAL" class="textarea1" id="alerjiler" style="border:1px solid red; margin:0px; padding:0px;"></textarea>
+</div></td>
+    </tr>
+  </table>
+</div>
+<!-- ------------------------------------------------------------------------------------------------------ -->
+</div>
+<!-- ------------------------------------------------------------------------------------------------------ -->
+
+
+</form>
+
+
+
+
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+
+<script language="vbscript">
+'///////////////// epikriz raporunu kaydediyoruz
+function epikkaydet()
+secTani="TANILAR:"
+Set tanilari=document.getElementById("secilentanilar")
+for sT=1 to tanilari.options.length-1
+secTani = secTani &","& tanilari.options(sT).value
+Next
+		if document.getElementById("tarih2").value="" then
+		msgbox("1. Tarih boþ býrakýlamaz!")::exit function
+		End if
+		if document.getElementById("tarih3").value="" then
+		msgbox("2. Tarih boþ býrakýlamaz!")::exit function
+		End if
+if document.getElementById("idmiz").value="" then
+msgbox("Bir hasta seçmelisiniz!"):exit function
+End if
+
+rskapatici()
+SQL="SELECT * FROM epikrizler"
+rs.Open SQL
+rs.addnew
+rs("kayittarihi")=now
+rs("hasta_id")=CStr(document.getElementById("idmiz").value)
+rs("secilentanilar")=secTani
+rs("tarih2")=document.getElementById("tarih2").value
+rs("tarih3")=document.getElementById("tarih3").value
+rs("kuruagirlik")=document.getElementById("kuruagirlik").value
+rs("hkuruagirlik_1")=document.getElementById("hkuruagirlik_1").value
+rs("hkuruagirlik_2")=document.getElementById("hkuruagirlik_2").value
+rs("hkuruagirlik_3")=document.getElementById("hkuruagirlik_3").value
+rs("kanakimhizi")=document.getElementById("kanakimhizi").value
+rs("ufprofili")=document.getElementById("ufprofili").value
+rs("naprofili")=document.getElementById("naprofili").value
+rs("hepbolus")=document.getElementById("hepbolus").value
+rs("hepidame")=document.getElementById("hepidame").value
+rs("fistulignesi")=document.getElementById("fistulignesi").value
+rs("alerjiler")=document.getElementById("alerjiler").value
+rs("haftalikseans")=document.getElementById("haftalikseans").value
+rs("dsuresi")=document.getElementById("dsuresi").value
+rs("dakimhizi")=document.getElementById("dakimhizi").value
+rs("kasidik")=document.getElementById("kasidik").value
+rs("kbazik")=document.getElementById("kbazik").value
+rs("diyalizer")=document.getElementById("diyalizer").value
+rs("eknot")=document.getElementById("eknot").value
+rs("ivepo")=document.getElementById("ivepo").value
+rs("ivvitamind3")=document.getElementById("ivvitamind3").value
+rs("ivdemir")=document.getElementById("ivdemir").value
+rs("ivvitaminc")=document.getElementById("ivvitaminc").value
+rs("lcarnitene")=document.getElementById("lcarnitene").value
+rs("caasetat")=document.getElementById("caasetat").value
+rs("cacarbonat")=document.getElementById("cacarbonat").value
+rs("ilac1")=document.getElementById("ilac1").value
+rs("ilac2")=document.getElementById("ilac2").value
+rs("ivepo_D")=document.getElementById("ivepo_D").value
+rs("ivvitamind3_D")=document.getElementById("ivvitamind3_D").value
+rs("ivdemir_D")=document.getElementById("ivdemir_D").value
+rs("ivvitaminc_D")=document.getElementById("ivvitaminc_D").value
+rs("lcarnitene_D")=document.getElementById("lcarnitene_D").value
+rs("caasetat_D")=document.getElementById("caasetat_D").value
+rs("cacarbonat_D")=document.getElementById("cacarbonat_D").value
+rs("ilac1_D")=document.getElementById("ilac1_D").value
+rs("ilac2_D")=document.getElementById("ilac2_D").value
+rs.update
+msgbox(" Bu hastaya ait "& document.getElementById("tarih2").value &"-"&document.getElementById("tarih3").value & " tarihli epikriz kaydý yapýlmýþtýr!")
+End function
+
+
+Function epiformdoldur()
+Set eskiEpiID=document.getElementById("eskiepikrizler")
+epiID = eskiEpiID.options(eskiEpiID.selectedIndex).value
+if epiID="" then exit function
+rskapatici()
+SQL="SELECT * FROM epikrizler WHERE id="&epiID
+rs.Open SQL
+document.getElementById("kuruagirlik").value=rs("kuruagirlik")
+document.getElementById("hkuruagirlik_1").value=rs("hkuruagirlik_1")
+document.getElementById("hkuruagirlik_2").value=rs("hkuruagirlik_2")
+document.getElementById("hkuruagirlik_3").value=rs("hkuruagirlik_3")
+document.getElementById("kanakimhizi").value=rs("kanakimhizi")
+document.getElementById("ufprofili").value=rs("ufprofili")
+document.getElementById("naprofili").value=rs("naprofili")
+document.getElementById("hepbolus").value=rs("hepbolus")
+document.getElementById("hepidame").value=rs("hepidame")
+document.getElementById("fistulignesi").value=rs("fistulignesi")
+document.getElementById("alerjiler").value=rs("alerjiler")
+document.getElementById("haftalikseans").value=rs("haftalikseans")
+document.getElementById("dsuresi").value=rs("dsuresi")
+document.getElementById("dakimhizi").value=rs("dakimhizi")
+document.getElementById("kasidik").value=rs("kasidik")
+document.getElementById("kbazik").value=rs("kbazik")
+document.getElementById("diyalizer").value=rs("diyalizer")
+document.getElementById("eknot").value=rs("eknot")
+document.getElementById("ivepo").value=rs("ivepo")
+document.getElementById("ivvitamind3").value=rs("ivvitamind3")
+document.getElementById("ivdemir").value=rs("ivdemir")
+document.getElementById("ivvitaminc").value=rs("ivvitaminc")
+document.getElementById("lcarnitene").value=rs("lcarnitene")
+document.getElementById("caasetat").value=rs("caasetat")
+document.getElementById("cacarbonat").value=rs("cacarbonat")
+document.getElementById("ilac1").value=rs("ilac1")
+document.getElementById("ilac2").value=rs("ilac2")
+document.getElementById("ivepo_D").value=rs("ivepo_D")
+document.getElementById("ivvitamind3_D").value=rs("ivvitamind3_D")
+document.getElementById("ivdemir_D").value=rs("ivdemir_D")
+document.getElementById("ivvitaminc_D").value=rs("ivvitaminc_D")
+document.getElementById("lcarnitene_D").value=rs("lcarnitene_D")
+document.getElementById("caasetat_D").value=rs("caasetat_D")
+document.getElementById("cacarbonat_D").value=rs("cacarbonat_D")
+document.getElementById("ilac1_D").value=rs("ilac1_D")
+document.getElementById("ilac2_D").value=rs("ilac2_D")
+End function
+
+
+'/////////////////  epikriz raporu siþlme bölümü, seçilmiþ olaný sileceðiz
+Function epiksil()
+Set eskiEpi = document.getElementById("eskiepikrizler")
+epikidsi = eskiEpi.options(eskiEpi.selectedIndex).value
+if epikidsi="" then
+msgbox("Bir epikriz seçmeden silemezsiniz!"):exit function
+End if
+rskapatici()
+' HASTANIN KAYDINI GERÇEKTEN SÝLMEK ÝSTÝYORMUYUZ?
+SQL="SELECT * FROM epikrizler WHERE id="&epikidsi
+rs.Open SQL
+Set WshShell = CreateObject("WScript.Shell")
+uyari1="AÞAÐIDAKÝ EPÝKRÝZ KAYDINI GERÇEKTEN SÝLMEK ÝSTÝYOR MUSUNUZ?" & Chr(13)
+uyari2="---------------------------------------------------" & Chr(13) &_
+rs("tarih2") &"-"& rs("tarih3") & " tarihli epikriz raporu."
+cevap = WshShell.Popup(uyari1 & uyari2, 4, "	EPÝKRÝZ KAYDI SÝLME ONAYI", 4+32)
+
+if cevap=6 then
+' VERÝLEN CEVAP EVET ÝSE KAYIT SÝLÝNECEKTÝR
+rskapatici()
+SQL="DELETE * FROM epikrizler WHERE id="&epikidsi
+rs.Open SQL
+msgbox("AÞAÐIDAKÝ EPÝKRÝZ KAYDI SÝLÝNMÝÞTÝR!" & Chr(13) & uyari2)
+window.location.reload()
+Else
+MsgBox("Silme iþleminden vazgeçtiniz!")
+Exit function
+End if
+Call cclose() : End Function
+
+
+'/////////////////  epikriz raporu hazýrlama bölümü ie ye export ediyoruz
+function epikriz_rap_haz()
+'---Hastaya ait veriler alýnýyor
+epiidsi = document.getElementById("idmiz").value
+if epiidsi="" then
+msgbox("Bir epikriz yok veya seçilmemiþ!"):exit function
+End if
+rskapatici()
+SQL="SELECT * FROM hastalar WHERE id="&epiidsi
+rs.Open SQL
+adisoyadi=rs("hasta_adi") &" "& rs("hasta_soyadi")
+kurum_vs=rs("hasta_kurum")&" / " & rs("hasta_sicil")&" / " & rs("hasta_karne_no")
+tckimlikno=rs("hasta_tckimlik_no")
+hastaadres=rs("hasta_adres")
+telefonlari=rs("hasta_telefonlar")
+hepatitmarkerlarimiz=rs("hasta_hepatit_marker")
+
+'---Epikrize ait veriler alýnýyor
+Set eskiEpiID=document.getElementById("eskiepikrizler")
+epiID = eskiEpiID.options(eskiEpiID.selectedIndex).value
+if epiID="" then
+msgbox("Bir epikriz yok veya seçilmemiþ!"):exit function
+End if
+rskapatici()
+SQL="SELECT * FROM epikrizler WHERE id="&epiID
+rs.Open SQL
+
+'------------yazdýrýlacak sayfa hazýrlanýyor
+hEpikriz = hEpikriz & "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"">"
+hEpikriz = hEpikriz & "<html xmlns=""http://www.w3.org/1999/xhtml"">"
+hEpikriz = hEpikriz & "<head>"
+hEpikriz = hEpikriz & "<title>EpiReady Epikriz Raporu</title>"
+hEpikriz = hEpikriz & "<meta http-equiv=""Content-Type"" content=""text/html; charset=iso-8859-9"" />"
+hEpikriz = hEpikriz & "<style >"
+hEpikriz = hEpikriz & ".cizgi{border:1px solid black;}"
+hEpikriz = hEpikriz & "</style>"
+hEpikriz = hEpikriz & "<link href=""css/css.css"" rel=""stylesheet"" type=""text/css"" />"
+hEpikriz = hEpikriz & "</head>"
+hEpikriz = hEpikriz & "<body style=""margin:0px"">"
+hEpikriz = hEpikriz & "<div style=""position:absolute;top:5px;left:0px;width:650px;text-align:left; margin:0px auto 0px auto;font-size:0.60em;font-family:verdana;color:#808080;"">&nbsp;<br></div>"
+hEpikriz = hEpikriz & "<div style=""position:absolute;top:40px;left:0px;width:650px; height:62px;text-align:center; margin:0px auto 0px auto;font-size:27px;font-weight:bold;color:#808080;"">EPÝKRÝZ</div>"
+hEpikriz = hEpikriz & "<div style=""width:650px;position:absolute;top:105px;left:0px;"" id=""hepsi"">"
+hEpikriz = hEpikriz & "<table style=""width:650px;"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<th width=""27%"" scope=""col""><div align=""left""><strong>Hasta Adý </strong></div></th>"
+hEpikriz = hEpikriz & "<th width=""1%"" scope=""col""><div align=""left""><strong>:</strong></div></th>"
+hEpikriz = hEpikriz & "<th width=""72%"" scope=""col""><div align=""left""><strong>"& adisoyadi &"</strong></div></th>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>Diyalize girdiði tarihler </strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& rs("tarih2")&"-"&rs("tarih3") &"</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>T.C. Kimlik No</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& tckimlikno &"&nbsp;</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<th width=""27%"" scope=""col""><div align=""left""><strong>Kurum/Sicil No/Karne No</strong></div></th>"
+hEpikriz = hEpikriz & "<th width=""1%"" scope=""col""><div align=""left""><strong>:</strong></div></th>"
+hEpikriz = hEpikriz & "<th width=""72%"" scope=""col""><div align=""left""><strong>"& kurum_vs &"</strong></div></th>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>Adres</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& hastaadres &"&nbsp;</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>Telefon</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& telefonlari &"&nbsp;</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>Hepatit Marker</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& hepatitmarkerlarimiz &"&nbsp;</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>Taný</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>:</strong></div></td>"
+hEpikriz = hEpikriz & "<td><div align=""left""><strong>"& REPLACE(rs("secilentanilar"),"TANILAR:,","") &"</strong></div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "</table>"
+hEpikriz = hEpikriz & "<table style=""width:650px;"" border=""1"" cellspacing=""0"" cellpadding=""0"">"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Kuru Aðýrlýk </strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" ><div align=""right""><strong>"& rs("kuruagirlik") &"kg </strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td width=""255"" height=""27"" ><div align=""left""><strong>Haftalýk Seans Sayýsý </strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td width=""396"" height=""27"" ><div align=""right""><strong>"& rs("haftalikseans") &"/hafta</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Hedef Kuru Aðýrlýk </strong></td>"
+hEpikriz = hEpikriz & "<td width=""59"" height=""27"" ><div align=""right""><strong>"& rs("hkuruagirlik_1") &"kg</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td width=""59"" height=""27"" ><div align=""right""><strong>"& rs("hkuruagirlik_2") &"kg</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td width=""59"" height=""27"" ><div align=""right""><strong>"& rs("hkuruagirlik_3") &"kg</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""left""><strong>Diyaliz Süresi </strong></div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""right""><strong>"& rs("dsuresi") &" saat</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Kan Akým Hýzý </strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" ><div align=""right""><strong>"& rs("kanakimhizi") &"ml/dakika</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""left""><strong>Diyalizat Akým Hýzý </strong></div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""right""><strong>"& rs("dakimhizi") &"ml/dakika</strong>&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>UF Profili </strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" ><div align=""right"">"& rs("ufprofili") &"&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""left""><strong>Konsantrat (asidik ) </strong></div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""right"">"& rs("kasidik") &"&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Na Profili </strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" ><div align=""right"">"& rs("naprofili") &"&nbsp;</div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""left""><strong>Konsantrat (bazik) </strong></div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""right"">"& rs("kbazik") &"&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td width=""131"" height=""27"" rowspan=""2"" ><strong>Heparinizasyon</strong></td>"
+hEpikriz = hEpikriz & "<td width=""69"" height=""27"" ><strong>bolus</strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" >"& rs("hepbolus") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""left""><strong>Diyalizer</strong></div></td>"
+hEpikriz = hEpikriz & "<td height=""27"" ><div align=""right"">"& rs("diyalizer") &"&nbsp;</div></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td width=""69"" height=""27"" ><strong>idame</strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" >"& rs("hepidame") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" rowspan=""3"" align=""left"" valign=""top"" ><strong>Ek Not: </strong>"& rs("eknot") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Fistül Ýðnesi </strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" >"& rs("fistulignesi") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""2"" ><strong>Allerjiler</strong></td>"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""3"" >"& rs("alerjiler") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr class=""cizgi"">"
+hEpikriz = hEpikriz & "<td height=""27"" colspan=""8"" >&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "</table>"
+hEpikriz = hEpikriz & "<p style=""margin-bottom:0px;margin-top:45px; font-weight: bold; font-size: 24px;"">TEDAVÝ</p>"
+hEpikriz = hEpikriz & "<table style=""width:650px;"" border=""1"" cellspacing=""0"" cellpadding=""0"">"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<th width=""18%"" height=""27"" scope=""col"">&nbsp;</th>"
+hEpikriz = hEpikriz & "<th width=""44%"" scope=""col"">ÝLAÇ ADI </th>"
+hEpikriz = hEpikriz & "<th width=""38%"" scope=""col"">DOZ</th>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>EPO</strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivepo") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivepo_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>IV Vitamin D<sub>3</sub> </strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivvitamind3") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivvitamind3_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>IV-DEMÝR</strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivdemir") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivdemir_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>IV-VÝTAMÝN C </strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivvitaminc") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ivvitaminc_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>L-CARNITENE</strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("lcarnitene") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("lcarnitene_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>Ca-ASETAT</strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("caasetat") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("caasetat_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27""><strong>Ca-KARBONAT</strong></td>"
+hEpikriz = hEpikriz & "<td>"& rs("cacarbonat") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("cacarbonat_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27"">&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ilac1") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ilac1_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td height=""27"">&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ilac2") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "<td>"& rs("ilac2_D") &"&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "</table>"
+hEpikriz = hEpikriz & "<table style=""width:650px;"" border=""0"" cellspacing=""0"" cellpadding=""0"">"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td width=""70%"">&nbsp;</td>"
+hEpikriz = hEpikriz & "<td width=""30%"" align=""left"">&nbsp;</td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "<tr>"
+hEpikriz = hEpikriz & "<td>&nbsp;</td>"
+hEpikriz = hEpikriz & "<td align=""left""><strong>&nbsp;</strong></td>"
+hEpikriz = hEpikriz & "</tr>"
+hEpikriz = hEpikriz & "</table>"
+hEpikriz = hEpikriz & "</div>"
+hEpikriz = hEpikriz & "<script>document.print();<" & "/script>"
+
+hEpikriz = hEpikriz & "</body>"
+hEpikriz = hEpikriz & "</html>"
+
+InitIE hEpikriz,760,960,0,0
+End function
+</script>
+
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+<!-- >< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><>< >< ><  -->
+
+</body>
+</html>
+
+
+
+

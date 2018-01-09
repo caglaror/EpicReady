@@ -1,0 +1,469 @@
+BODY {font:12 pt verdana;
+}
+
+div.bar {
+        background: buttonface;
+        border: 1px ridge;
+		/*border-color: #ffffff #6600CC #6600CC #ffffff;*/
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        cursor: cross;
+    }
+
+div.aciklama {
+        background: #FFFFCC;
+        border: 1px ridge;
+		border-color: #ffffff #FFFF99 #FFFF99 #ffffff;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        cursor: cross;
+		position:absolute;
+		width:240;
+		left:0;
+		top:20;
+    }
+
+a{font-weight:bold;}
+
+font.neon
+{
+width:10%;
+filter:glow(color=#CCFFFF, strength=3);
+color:red;
+font-size: 14px;
+font-family: Verdana;
+font-weight:bold;
+} 
+
+font.mini
+{
+color:red;
+font-size: 10px;
+font-family: Verdana;
+font-weight:bold;
+cursor:hand;
+} 
+
+font.mini_siyah
+{
+color:black;
+font-size: 10px;
+font-family: Verdana;
+font-weight:bold;
+} 
+
+select.323{	font-size: 10px;
+			font-family: Verdana;
+			border: 1px solid red;}
+textarea.222{
+			font-size: 10px;
+			font-family: Verdana;
+			border: 1px solid #FF0000;
+			margin:0px;
+			}
+select.322{
+			font-size: 10px;
+			font-family: Verdana;
+			border: 1px solid #FF0000;
+			margin:0px;
+
+			}
+td.kabarik {			/* table icindeki hucrelerden resim tasiyanlar icin ozellikler*/
+	background-color: #0CCD4A;
+	border: 1px solid;
+	border-color: #D7F1BE #009900 #009900 #D7F1BE;
+	padding: 2px 2px 2px 6px;
+	font-family:verdana;
+	font-size:10;
+						}
+
+
+div.pano_act{	border:1 solid ;
+				background-color:darkblue;
+				color: white;
+				font-size:12;
+				padding:0px 0px 0px 10px;
+				font-family:verdana;
+				font-weight:bold;
+				border-color: #ffffff black black #ffffff;
+				
+				}
+
+div.pano{	border:1 solid ;
+				background-color:buttonface;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+
+div.ici {			/* table icindeki hucrelerden resim tasiyanlar icin ozellikler*/
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:buttonface;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+
+div.hatirla {	
+	border: 0px;
+	padding: 0px 0px 0px 0px;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+	overflow:auto;
+	height:80%;
+	width:100%;
+	}
+
+td.ic {			/* table icindeki hucrelerden resim tasiyanlar icin ozellikler*/
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:buttonface;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+
+td.ic_gunler {			/* table icindeki hucrelerden resim tasiyanlar icin ozellikler*/
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:buttonface;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+	background-image: url("img/gunler.png")
+	background-repeat: repeat-y;
+
+					}
+
+td.icX {			/* */
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:lightgreen;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+
+td.icY {			/* */
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:pink;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+
+td.icB {			
+	background-color: #B7B7FF;
+	border: 1px solid;
+	border-color: #ffffff #6600CC #6600CC #ffffff;
+	padding: 2px 2px 2px 6px;
+	font-family:verdana;
+	font-size:12;
+						}
+
+td.icC {			
+	background-color: #FFCCFF;
+	border: 1px solid;
+	border-color: #ffffff #6600CC #6600CC #ffffff;
+	padding: 2px 2px 2px 6px;
+	font-family:verdana;
+	font-size:12;
+						}
+
+td.icD {			
+	background-color: #CCFF99;
+	border: 1px solid;
+	border-color: #ffffff #6600CC #6600CC #ffffff;
+	padding: 2px 2px 2px 6px;
+	font-family:verdana;
+	font-size:12;
+						}
+
+td.ic_hover {				
+	background-color: #D2D2FF;
+	border: 1px solid;
+	border-color: #ffffff #6600CC #6600CC #ffffff;
+	padding: 1px 1px 1px 1px;
+	font-family:verdana;
+	font-size:10;
+	cursor:hand;
+	/* text-align: center; */
+			}
+
+td.ic_mousedown {				
+	background-color: #8282FF;
+	border: 1px solid;
+	border-color: #6600CC #ffffff #ffffff #6600CC;
+	padding: 1px 1px 1px 1px;
+	font-family:verdana;
+	font-size:10;
+	color:white;
+	cursor:hand;
+			}
+
+td.icBos {			/* */
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:#FFCCFF;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+td.icDolu {			/* */
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:lightblue;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+						}
+
+
+
+input.textbox1{ border: 1 solid ;
+				border-color:#FF0000;
+				font-family:verdana;
+				font-size:10;
+				cursor:hand;
+				}
+
+			
+input.textbox2{ border: 0 solid ;
+			  border-color:#FF0000;
+			  font-family:verdana;
+				font-size:10;
+				cursor:hand;
+				}
+
+input.textbox3{	  border: 0 solid ;
+			  border-color:#FF0000;
+			  font-size:10;
+			  font-family:verdana;
+				}
+
+select.option1{	  border: 0 solid ;
+			  border-color:#FF0000;
+			  font-size:10;
+			  font-family:verdana;
+				}
+table.table1{	border:1 solid ;
+				background-color:buttonface;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+
+table.menu{		border:1 solid ;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+
+table.gizli{	border:0;
+				font-size:10;
+				font-family:verdana;
+				font-weight:bold;
+				}
+
+tr.tr1{			border:1 solid ;
+				background-color:buttonface;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+tr.tr5{			border:1 solid ;
+				background-color:buttonface;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				cursor:pointer;
+				}
+tr.kupurbaslik{			border:1 solid ;
+				background-color:black;
+				color:white;
+				font-size:11;
+				font-weight:bold;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+}
+
+
+td.td5{			border:1 solid ;
+				background-color:buttonface;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+td.td6{			border:1 solid ;
+				background-color:black;
+				font-size:10;
+				font-family:verdana;
+				border-color: black #ffffff #ffffff black;
+				color:white;
+				cursor:hand;
+				}
+td.td7{			border:1 solid ;
+				background-color:brown;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff #ffffff #ffffff #ffffff;
+				color:white;
+				cursor:hand;
+				}
+
+tr.menubaslik{	border:1 solid ;
+				background-color:silver;
+				font-size:10;
+				font-family:verdana;
+				border-color: #ffffff black black #ffffff;
+				}
+
+tr.omover{
+				background-color:black;
+				color:white;
+				cursor:hand;
+				border-color: #ffffff black black #ffffff;
+				}
+
+
+tr.omout{		background-color:#00FF00;
+				color:black;
+}
+
+.guzelgorun		{
+				font-family:verdana;
+				font-size:10;
+				font-weight:bold;
+				}
+
+font.baslik4		{
+				font-family:verdana;
+				font-size:12;
+				font-weight:bold;
+				}
+
+
+img.linkimg {			/* */
+	border: 0px;
+	padding: 0px 0px 0px 0px;
+	cursor:hand;
+						}
+
+
+
+
+
+html {
+	border:	0;
+	overflow:	hidden;
+}
+
+.menu-bar {
+	border-bottom:	2px groove;
+}
+
+p {
+	font:	Message-Box;
+	font:	MessageBox;
+	margin:	10px;
+}
+
+.warning {
+	color:	red;
+}
+
+a {
+	color: blue;
+}
+
+textarea {
+	margin:		10px;
+	display:	block;
+	width:		auto;
+}
+
+div.mesbaslik{
+        background: #FFFFCC;
+        border: 1px ridge;
+		border-color: #ffffff #FFFF99 #FFFF99 #ffffff;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        cursor: cross;
+		font:14 pt arial;
+		color:white;
+		filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=1, StartColorStr='#000000', EndColorStr='#0000FF');
+			}
+
+div.mesgovde{
+	    background: #FFFFCC;
+        border: 1px ridge;
+		border-color: #ffffff #FFFF99 #FFFF99 #ffffff;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 5px;
+        cursor: cross;
+		font:10 pt arial black;
+			}
+		.kirmizibar{
+		background-color:red;
+		color:white;
+		text-align:center;
+		font-size:1em;
+		font-weight:bold;
+		border:0px;
+		}
+td.ic {			
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:buttonface;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+		cursor:pointer;
+
+						}
+td.ic_gunler {		
+	border: 1px solid;
+	padding: 1px 1px 1px 1px;
+	background-color:buttonface;
+	font-size:10;
+	font-family:verdana;
+	border-color: #ffffff black black #ffffff;
+	cursor:pointer;
+
+					}
+input.textbox1{ border: 1 solid ;
+				border-color:#FF0000;
+				font-family:verdana;
+				font-size:10;
+				cursor:hand;
+				}
+
+			
+input.textbox2{ border: 0 solid ;
+			  border-color:#FF0000;
+			  font-family:verdana;
+				font-size:10;
+				cursor:hand;
+				}
+a.gun{font-size:14 px; text-align:center; width:100%;color:blue;text-decoration: none; display:block; background-color:#FFFFCC;}
+a.gun:visited{font-size:14 px; text-align:center; width:100%;color:blue;text-decoration: none;display:block; background-color:#FFFFCC;}
+a.gun:hover{font-size:14 px; text-align:center; width:100%;color:white;text-decoration: none; background-color:blue;display:block;}
+
+a.bugun{font-size:14 px; text-align:center; width:100%;color:red;text-decoration: none;display:block; background-color:#FFFF00;}
+a.bugun:visited{font-size:14 px; text-align:center; width:100%;color:red;text-decoration: none;display:block; background-color:#FFFF00;}
+a.bugun:hover{font-size:14 px; text-align:center; width:100%;color:white;text-decoration: none; background-color:red;display:block;}
+
+a.haftasonu{font-size:14 px; text-align:center; width:100%;color:red;text-decoration: none;display:block; background-color:#FF9900;}
+a.haftasonu:visited{font-size:14 px; text-align:center; width:100%;color:red;text-decoration: none;display:block; background-color:#FF9900;}
+a.haftasonu:hover{font-size:14 px; text-align:center; width:100%;color:white;text-decoration: none; background-color:red;display:block;}
+
+a.oncekigun{font-size:14 px; text-align:center; width:100%;color:#FFCC33;text-decoration: none; display:block; background-color:#CC9933}
+a.oncekigun:visited{font-size:14 px; text-align:center; width:100%;color:#FFCC33;text-decoration: none;display:block; background-color:#CC9933;}
+a.oncekigun:hover{font-size:14 px; text-align:center; width:100%;color:#CC9933;text-decoration: none; background-color:#FFCC33;display:block;}
